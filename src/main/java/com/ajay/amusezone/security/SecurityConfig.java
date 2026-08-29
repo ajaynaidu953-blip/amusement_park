@@ -1,0 +1,6 @@
+package com.ajay.amusezone.security;
+import org.springframework.context.annotation.*; import org.springframework.security.config.annotation.web.builders.HttpSecurity; import org.springframework.security.config.http.SessionCreationPolicy; import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; import org.springframework.security.crypto.password.PasswordEncoder; import org.springframework.security.web.SecurityFilterChain; import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+@Configuration public class SecurityConfig { private final JwtAuthenticationFilter filter; public SecurityConfig(JwtAuthenticationFilter filter){this.filter=filter;}
+ @Bean PasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();}
+ @Bean SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{return http.csrf(csrf->csrf.disable()).cors(cors->cors.disable()).sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(a->a.requestMatchers("/api/auth/**","/api/rides/**","/api/water-rides/**","/api/tickets/**","/api/offers/**").permitAll().requestMatchers("/api/admin/**").hasRole("ADMIN").anyRequest().authenticated()).addFilterBefore(filter,UsernamePasswordAuthenticationFilter.class).build();}
+}

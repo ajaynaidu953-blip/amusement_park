@@ -1,0 +1,10 @@
+package com.ajay.amusezone.service;
+import com.ajay.amusezone.dto.*; import com.ajay.amusezone.entity.*; import com.ajay.amusezone.repository.*; import org.springframework.stereotype.Service; import java.util.*;
+@Service public class BookingService { private final BookingRepository bookings; private final UserRepository users; private final EntryTicketRepository tickets; private final RideRepository rides; private final OfferRepository offers;
+ public BookingService(BookingRepository b,UserRepository u,EntryTicketRepository t,RideRepository r,OfferRepository o){bookings=b;users=u;tickets=t;rides=r;offers=o;}
+ public Booking create(BookingRequest req){ User u=users.findById(req.userId()).orElseThrow(()->new RuntimeException("User not found")); EntryTicket t=tickets.findById(req.entryTicketId()).orElseThrow(()->new RuntimeException("Entry ticket not found")); Booking b=new Booking(); b.setUser(u); b.setEntryTicket(t); b.setVisitDate(req.visitDate()); b.setAdults(req.adults()); b.setChildren(req.children()); double total=t.getPrice()*req.adults();
+  if(req.rides()!=null) for(BookingRideRequest rr:req.rides()){Ride ride=rides.findById(rr.rideId()).orElseThrow(()->new RuntimeException("Ride not found: "+rr.rideId())); BookingRide br=new BookingRide(); br.setBooking(b); br.setRide(ride); br.setQuantity(rr.quantity()); br.setPrice(ride.getPrice()); b.getRides().add(br); total+=ride.getPrice()*rr.quantity();}
+  if(req.offerCode()!=null&&!req.offerCode().isBlank()){Offer o=offers.findByCodeIgnoreCase(req.offerCode()).orElseThrow(()->new RuntimeException("Offer not found")); if(!o.isActive()) throw new RuntimeException("Offer is inactive"); b.setOfferCode(o.getCode()); total-=total*o.getDiscountPercent()/100.0;}
+  b.setTotalAmount(Math.max(0,Math.round(total*100.0)/100.0)); return bookings.save(b); }
+ public List<Booking> all(){return bookings.findAll();} public List<Booking> byUser(Long id){return bookings.findByUserId(id);} public Booking get(Long id){return bookings.findById(id).orElseThrow(()->new RuntimeException("Booking not found"));} public Booking cancel(Long id){Booking b=get(id);b.setStatus("CANCELLED");return bookings.save(b);}
+}

@@ -1,0 +1,3 @@
+package com.ajay.amusezone.controller;
+import com.ajay.amusezone.entity.Ride; import com.ajay.amusezone.service.RideService; import org.springframework.web.bind.annotation.*; import java.util.List;
+@RestController @RequestMapping("/api/rides") public class RideController {private final RideService s; public RideController(RideService s){this.s=s;} @GetMapping public List<Ride> all(){return s.all();} @GetMapping("/{id}") public Ride get(@PathVariable Long id){return s.get(id);} @PostMapping public Ride create(@RequestBody Ride r){return s.save(r);} @PutMapping("/{id}") public Ride update(@PathVariable Long id,@RequestBody Ride r){r.setId(id);return s.save(r);} @DeleteMapping("/{id}") public void delete(@PathVariable Long id){s.delete(id);}}

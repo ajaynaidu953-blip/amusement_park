@@ -1,0 +1,3 @@
+package com.ajay.amusezone.controller;
+import com.ajay.amusezone.dto.PaymentRequest; import com.ajay.amusezone.entity.Payment; import com.ajay.amusezone.service.PaymentService; import jakarta.validation.Valid; import org.springframework.web.bind.annotation.*;
+@RestController @RequestMapping("/api/payments") public class PaymentController {private final PaymentService s; public PaymentController(PaymentService s){this.s=s;} @PostMapping public Payment pay(@Valid @RequestBody PaymentRequest r){return s.pay(r);} @GetMapping("/booking/{bookingId}") public Payment get(@PathVariable Long bookingId){return s.getByBooking(bookingId);}}

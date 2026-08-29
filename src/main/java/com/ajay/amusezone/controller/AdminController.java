@@ -1,0 +1,3 @@
+package com.ajay.amusezone.controller;
+import com.ajay.amusezone.entity.User; import com.ajay.amusezone.repository.UserRepository; import org.springframework.web.bind.annotation.*; import java.util.List;
+@RestController @RequestMapping("/api/admin") public class AdminController {private final UserRepository users; public AdminController(UserRepository users){this.users=users;} @GetMapping("/users") public List<User> users(){return users.findAll();} @PutMapping("/users/{id}/role") public User role(@PathVariable Long id,@RequestParam String role){User u=users.findById(id).orElseThrow(()->new RuntimeException("User not found"));u.setRole(role.toUpperCase());return users.save(u);}}

@@ -1,0 +1,3 @@
+package com.ajay.amusezone.controller;
+import com.ajay.amusezone.entity.User; import com.ajay.amusezone.service.UserService; import org.springframework.web.bind.annotation.*; import java.util.List;
+@RestController @RequestMapping("/api/users") public class UserController {private final UserService s; public UserController(UserService s){this.s=s;} @GetMapping public List<User> all(){return s.getAllUsers();} @GetMapping("/{id}") public User get(@PathVariable Long id){return s.getUserById(id);} @DeleteMapping("/{id}") public String delete(@PathVariable Long id){s.deleteUser(id);return "User deleted successfully";}}
